@@ -35,6 +35,7 @@ class Snake:
         last_position = self.tail[0]
         self.tail[0] = self.path.pop(-1)
         self.row, self.column = self.tail[0]
+        self.direction = self.row - last_position[0], self.column - last_position[1]
         for position in range(1, len(self.tail)):
             self.tail[position], last_position = last_position, self.tail[position]
 
