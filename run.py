@@ -46,7 +46,7 @@ class Snake:
             direction_row, direction_column = (second_last_row - last_row), (second_last_column - last_column)
         else:
             direction_row, direction_column = self.direction
-        self.tail.append((last_row + direction_row, last_column + direction_column))
+        self.tail.append((last_row - direction_row, last_column - direction_column))
 
     def generate_path(self, best_path, current_node):
         full_path = [current_node]
