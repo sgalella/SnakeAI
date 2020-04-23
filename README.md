@@ -6,3 +6,18 @@ Implementation of A* to play snake.
     <img width="360" height="360" src="images/snakeAI.gif">
 </p>
 
+
+## Installation
+
+To install the dependencies, run the following command:
+
+```bash
+pip install -r requirements.txt
+```
+
+Then use the following command to run SnakeAI.
+
+```bash
+python run.py
+```
+
