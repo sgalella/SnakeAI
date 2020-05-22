@@ -21,3 +21,10 @@ Then use the following command to run SnakeAI.
 python run.py
 ```
 
+## Usage
+
+Run the program with the following command:
+
+```python
+python run.py
+```
