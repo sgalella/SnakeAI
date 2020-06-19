@@ -44,13 +44,20 @@ class Snake:
         for row, column in self.path:
             pygame.draw.rect(screen, (70, 130, 180), ((width + margin) * column + margin, (width + margin) * row + margin, width, width))
 
-    def move(self, grid, food):
+    def move_AI(self, grid, food):
         if not self.path:
             self.path = self.get_path(grid, food)
         last_position = self.tail[0]
         self.tail[0] = self.path.pop(-1)
         self.row, self.column = self.tail[0]
         self.direction = self.row - last_position[0], self.column - last_position[1]
+        for position in range(1, len(self.tail)):
+            self.tail[position], last_position = last_position, self.tail[position]
+
+    def move_user(self, grid):
+        last_position = self.tail[0]
+        self.row, self.column = self.tail[0]
+        self.tail[0] = self.tail[0][0] + self.direction[0], self.tail[0][1] + self.direction[1]
         for position in range(1, len(self.tail)):
             self.tail[position], last_position = last_position, self.tail[position]
 
@@ -166,9 +173,26 @@ class GameWindow:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     raise GameExitedError
+                if mode == "Play":
+                    if event.type == pygame.KEYDOWN:
+                        if event.key == pygame.K_LEFT:
+                            if snake.direction != (0, 1):
+                                snake.direction = (0, -1)
+                        elif event.key == pygame.K_RIGHT:
+                            if snake.direction != (0, -1):
+                                snake.direction = (0, 1)
+                        elif event.key == pygame.K_UP:
+                            if snake.direction != (1, 0):
+                                snake.direction = (-1, 0)
+                        elif event.key == pygame.K_DOWN:
+                            if snake.direction != (-1, 0):
+                                snake.direction = (1, 0)
 
             # Move
-            snake.move(grid, food)
+            if mode == "AI":
+                snake.move_AI(grid, food)
+            elif mode == "Play":
+                snake.move_user(grid)
 
             # Check collisions
             if (snake.row < 0 or snake.row > grid.rows - 1 or snake.column < 0 or snake.column > grid.columns - 1
@@ -201,4 +225,5 @@ class GameWindow:
 
 if __name__ == "__main__":
     window = GameWindow(rows=12, columns=12, width=20, margin=2)
-    window.run()
+    window.run(mode="Play")
+    # window.run(mode="AI")
