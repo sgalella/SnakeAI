@@ -2,6 +2,21 @@ import pygame
 import random
 
 
+class SnakeCollisionError(Exception):
+    def __init__(self):
+        super().__init__(f"Snake collided!")
+
+
+class NoPathError(Exception):
+    def __init__(self):
+        super().__init__(f"Snake could not find any possible path")
+
+
+class GameExitedError(Exception):
+    def __init__(self):
+        super().__init__(f"You exited the game!")
+
+
 class GridWorld:
     def __init__(self, rows=12, columns=12, color=(128, 128, 128)):
         self.rows = rows
@@ -20,7 +35,7 @@ class Snake:
         self.column = column
         self.color = color
         self.tail = [(self.row, self.column)]
-        self.direction = random.choice([(0, -1), (0, 1), (-1, 0), (1, 0)])
+        self.direction = (0, 0)
         self.path = []
 
     def draw(self, screen, width, margin):
@@ -65,7 +80,6 @@ class Snake:
         while open_nodes:
             current_node, _, current_direction = open_nodes.pop(0)
             if (current_node == goal_node):
-                self.generate_path(best_path, current_node)
                 return self.generate_path(best_path, current_node)
             closed_nodes.append(current_node)
             for (next_node, next_direction) in self.get_actions(grid, current_node, current_direction):
@@ -75,6 +89,7 @@ class Snake:
                     best_path[next_node] = current_node
                     open_nodes.append((next_node, next_cost, next_direction))
             open_nodes.sort(key=lambda x: x[1])
+        raise NoPathError
 
     def check_next_node(self, open_nodes, next_state, next_cost):
         costs = any([pair[0] == next_state for pair in open_nodes])
@@ -85,13 +100,15 @@ class Snake:
     def get_actions(self, grid, current_node, current_direction):
         current_row, current_column = current_node
         possible_actions = []
-        if current_direction == (0, -1):  # Up
+        if current_direction == (0, -1):  # Left
             actions = [(0, -1), (-1, 0), (1, 0)]
-        elif current_direction == (0, 1):  # Down
+        elif current_direction == (0, 1):  # Right
             actions = [(0, 1), (-1, 0), (1, 0)]
-        elif current_direction == (-1, 0):  # Left
+        elif current_direction == (-1, 0):  # Up
             actions = [(0, -1), (0, 1), (-1, 0)]
-        elif current_direction == (1, 0):  # Right
+        elif current_direction == (1, 0):  # Down
+            actions = [(0, -1), (0, 1), (1, 0)]
+        else:  # Start
             actions = [(0, -1), (0, 1), (1, 0)]
         for action in actions:
             action_row, action_column = action
@@ -121,24 +138,26 @@ class Food:
 
 
 class GameWindow:
-    def __init__(self, rows=12, columns=12, width=20, margin=2, title="SnakeAI"):
+    def __init__(self, rows=12, columns=12, width=20, margin=2):
         self.rows = rows
         self.columns = columns
         self.width = width
         self.margin = margin
-        self.title = title
+        self.score = 0
         self.size = ((self.width + self.margin) * self.columns + self.margin, (self.width + self.margin) * self.rows + self.margin)
 
-    def run(self):
+    def run(self, mode="AI"):
         # Initialize pygame
-        pygame.init()
-        pygame.display.set_caption(self.title)
+        self.start()
+        pygame.display.set_caption(f"Score: {self.score}")
         self.screen = pygame.display.set_mode(self.size)
 
         # Create grid
         grid = GridWorld(rows=self.rows, columns=self.columns)
-        snake = Snake(row=10, column=10)
-        food = Food(row=5, column=5)
+        snake = Snake(row=random.randint(0, grid.rows - 1), column=random.randint(0, grid.columns - 1))
+        food = Food(row=random.randint(0, grid.rows - 1), column=random.randint(0, grid.columns - 1))
+        while (snake.row == food.row and snake.column == food.column):
+            food.reallocate(grid, snake)
 
         # Run loop
         clock = pygame.time.Clock()
@@ -146,15 +165,25 @@ class GameWindow:
         while is_running:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
-                    is_running = False
+                    raise GameExitedError
 
             # Move
             snake.move(grid, food)
 
+            # Check collisions
+            if (snake.row < 0 or snake.row > grid.rows - 1 or snake.column < 0 or snake.column > grid.columns - 1
+                    or (snake.row, snake.column) in snake.tail[2:]):
+                raise SnakeCollisionError
+
             # Eat
             if (snake.row == food.row and snake.column == food.column):
                 snake.grow()
-                food.reallocate(grid, snake)
+                self.score += 1
+                pygame.display.set_caption(f"Score: {self.score}")
+                if self.score == self.rows * self.columns - 1:
+                    break
+                else:
+                    food.reallocate(grid, snake)
 
             # Draw
             grid.draw(self.screen, self.width, self.margin)
@@ -162,9 +191,14 @@ class GameWindow:
             food.draw(self.screen, self.width, self.margin)
             pygame.display.flip()
             clock.tick(10)
+
+    def start(self):
+        pygame.init()
+
+    def close(self):
         pygame.quit()
 
 
 if __name__ == "__main__":
-    window = GameWindow(rows=12, columns=12, width=20, margin=2, title="SnakeAI")
+    window = GameWindow(rows=12, columns=12, width=20, margin=2)
     window.run()
