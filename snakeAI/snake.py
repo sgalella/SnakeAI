@@ -12,6 +12,11 @@ class NoPathError(Exception):
         super().__init__(f"Snake could not find any possible path")
 
 
+class WindowDimensionError(Exception):
+    def __init__(self):
+        super().__init__(f"Rows and columns must be larger than 2!")
+
+
 class GameExitedError(Exception):
     def __init__(self):
         super().__init__(f"You exited the game!")
@@ -146,6 +151,8 @@ class Food:
 
 class GameWindow:
     def __init__(self, rows=12, columns=12, width=20, margin=2):
+        if rows < 3 or columns < 3:
+            raise WindowDimensionError
         self.rows = rows
         self.columns = columns
         self.width = width
