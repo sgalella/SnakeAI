@@ -15,16 +15,11 @@ To install the dependencies, run the following command:
 pip install -r requirements.txt
 ```
 
-Then use the following command to run SnakeAI.
-
-```bash
-python run.py
-```
 
 ## Usage
 
-Run the program with the following command:
+Use the following command to run SnakeAI.
 
-```python
-python run.py
+```bash
+python snakeAI/menu.py
 ```
