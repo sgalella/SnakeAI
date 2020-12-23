@@ -1,7 +1,7 @@
-import snake
+
 import tkinter as tk
-import tkinter.filedialog
 from tkinter import messagebox
+from . import snake
 
 
 class MainMenu(tk.Frame):
@@ -66,7 +66,7 @@ class MainMenu(tk.Frame):
             messagebox.showinfo("Exit", f"Your total score is {window.score}!", parent=self)
             window.close()
         except snake.WindowDimensionError:
-            messagebox.showerror("Error!", f"Rows and columns must be larger than 2!", parent=self)
+            messagebox.showerror("Error!", "Rows and columns must be larger than 2!", parent=self)
 
     def run_AI(self):
         num_rows = int(self.rows_entry.get())
@@ -80,16 +80,10 @@ class MainMenu(tk.Frame):
             messagebox.showinfo("You lose!", f"Your total score is {window.score}!", parent=self)
             window.close()
         except snake.NoPathError:
-            messagebox.showinfo("You lose!", f"Snake got trapped!", parent=self)
+            messagebox.showinfo("You lose!", "Snake got trapped!", parent=self)
             window.close()
         except snake.GameExitedError:
             messagebox.showinfo("Exit", f"Your total score is {window.score}!", parent=self)
             window.close()
         except snake.WindowDimensionError:
-            messagebox.showerror("Error!", f"Rows and columns must be larger than 2!", parent=self)
-
-
-if __name__ == "__main__":
-    root = tk.Tk()
-    menu = MainMenu(root)
-    root.mainloop()
+            messagebox.showerror("Error!", "Rows and columns must be larger than 2!", parent=self)

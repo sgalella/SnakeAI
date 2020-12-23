@@ -21,5 +21,5 @@ pip install -r requirements.txt
 Use the following command to run SnakeAI.
 
 ```bash
-python snakeAI/menu.py
+python -m snakeAI
 ```

@@ -4,22 +4,22 @@ import random
 
 class SnakeCollisionError(Exception):
     def __init__(self):
-        super().__init__(f"Snake collided!")
+        super().__init__("Snake collided!")
 
 
 class NoPathError(Exception):
     def __init__(self):
-        super().__init__(f"Snake could not find any possible path")
+        super().__init__("Snake could not find any possible path")
 
 
 class WindowDimensionError(Exception):
     def __init__(self):
-        super().__init__(f"Rows and columns must be larger than 2!")
+        super().__init__("Rows and columns must be larger than 2!")
 
 
 class GameExitedError(Exception):
     def __init__(self):
-        super().__init__(f"You exited the game!")
+        super().__init__("You exited the game!")
 
 
 class GridWorld:
@@ -228,9 +228,3 @@ class GameWindow:
 
     def close(self):
         pygame.quit()
-
-
-if __name__ == "__main__":
-    window = GameWindow(rows=12, columns=12, width=20, margin=2)
-    window.run(mode="Play")
-    # window.run(mode="AI")
