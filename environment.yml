@@ -1,0 +1,6 @@
+name: snakeAI
+dependencies:
+  - python=3.6
+  - pip
+  - pip:
+    - pygame=1.9.6
